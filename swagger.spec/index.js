@@ -13,10 +13,10 @@ const swaggerDefinition = {
       url: "http://localhost:8090/api",
       description: "Local server",
     },
-    // {
-    //   url: "https://backend.zepul.com/api",
-    //   description: "Live server",
-    // },
+    {
+      url: "https://backend-repo-techtitans-1.onrender.com/api",
+      description: "Live server",
+    },
     // {
     //   url: "http://192.168.0.122:8081/api",
     //   description: "Testing server",
