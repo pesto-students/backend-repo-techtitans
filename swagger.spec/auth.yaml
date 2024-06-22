@@ -1,0 +1,368 @@
+paths:
+  "/auth/login":
+    post:
+      summary: User Login
+      tags:
+        - Login
+      produces:
+        - application/json
+      requestBody:
+        description: User Authentication Details
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/loginSchema"
+      responses:
+        "200":
+          description: User Details with Auth token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/userSchema"
+        "404":
+          description: User Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+  "/auth/signup":
+    post:
+      summary: Customer Signup
+      tags:
+        - Sign In
+      produces: application/json
+      requestBody:
+        description: Customer Sign In Details
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/signUpSchema"
+      responses:
+        "201":
+          description: User Details with Auth token.
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: User Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
+  "/auth/expert/signup":
+    post:
+      summary: Expert Signup
+      tags:
+        - Sign In
+      produces: application/json
+      requestBody:
+        description: Expert Sign In Details
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/ExpertSignUpSchema"
+      responses:
+        "201":
+          description: User Details with Auth token.
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
+  "/auth/signout":
+    get:
+      summary: Customer Signout
+      tags:
+        - Sign In
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Signout Success.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logged Out Successfully
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
+  "/domains":
+    get:
+      summary: All Document types available in Doc Checker.
+      tags:
+        - Constants
+      responses:
+        "200":
+          description: All Document Types list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
+  "/industries":
+    get:
+      summary: Get All Industries.
+      tags:
+        - Constants
+      responses:
+        "200":
+          description: Industries List.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
+  "/auth/forgotPassword":
+    post:
+      summary: Forgot Password API
+      tags:
+        - Fotgot Password
+      produces:
+        - application/json
+      requestBody:
+        description: User Email-id
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emailId:
+                  type: string
+      responses:
+        "200":
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: Email Sent Successfully
+        "404":
+          description: User Not Found
+          content:
+            application/json:
+              schema:
+                type: string
+                example: user does not exists or might be inactive.
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+  "/auth/verifyOTP":
+    post:
+      summary: Verify OTP API
+      tags:
+        - Fotgot Password
+      produces:
+        - application/json
+      requestBody:
+        description: User Email-id
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                emailId:
+                  type: string
+                otp:
+                  type: string
+      responses:
+        "200":
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  accessToken:
+                    type: string
+                  message: 
+                    type: string
+                    example: OTP Verified
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Invalid OTP
+  "/auth/updatePassword":
+    post:
+      summary: Update User Password
+      tags:
+        - Fotgot Password
+      produces:
+        - application/json
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: User Password
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: Password Updated Successfully
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Invalid OTP
+definitions:
+  loginSchema:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+        example: 12345
+  userSchema:
+    type: object
+    properties:
+      _id:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+      emailId:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      isActive:
+        type: boolean
+      createdAt:
+        type: string
+      updatedAt:
+        type: string
+      fullname:
+        type: string
+      accessToken:
+        type: string
+      profile:
+        $ref: "#/definitions/userProfileSchema"
+  signUpSchema:
+    type: object
+    properties:
+      firstname:
+        type: string
+      lastname:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      emailId:
+        type: string
+  ExpertSignUpSchema:
+    type: object
+    properties:
+      firstname:
+        type: string
+      lastname:
+        type: string
+      username:
+        type: string
+      emailId:
+        type: string
+      password:
+        type: string
+      profile:
+        type: object
+        properties:
+          profileSummary:
+            type: string
+          linkedInUrl:
+            type: string
+          yearsOfExperience:
+            type: number
+          domainOfExpertise:
+            type: array
+            items:
+              type: string
+              enum:
+                - Product Requirement Document
+                - Resume
+                - LOR
+                - Essay
+          industry:
+            type: array
+            items:
+              type: string
+              enum:
+                - Software
+                - Hardware
+                - Pharmaceutical
+                - Banking
+                - Consulting
+          resume:
+            type: string

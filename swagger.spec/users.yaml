@@ -1,0 +1,188 @@
+paths:
+  "/updateExpertProfile":
+    put:
+      summary: User Profile Update
+      tags:
+        - User Profile
+      security:
+        - bearerAuth: []
+      # parameters:
+      #   - in: path
+      #     name: username
+      #     description: Username of User
+      #     required: true
+      #     schema:
+      #       type: string
+      #       format: string
+      requestBody:
+        description: User Profile Details
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/userProfileSchema"
+      responses:
+        "200":
+          description: User Details with Updated Profile details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/userSchema"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+  "/updateCustomerProfile":
+    put:
+      summary: User Profile Update
+      tags:
+        - User Profile
+      security:
+        - bearerAuth: []
+      # parameters:
+      #   - in: path
+      #     name: username
+      #     description: Username of User
+      #     required: true
+      #     schema:
+      #       type: string
+      #       format: string
+      requestBody:
+        description: User Profile Details
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/updateUserProfile"
+      responses:
+        "200":
+          description: User Details with Updated Profile details.
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/userSchema"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+  "/updateUsername":
+    put:
+      summary: User - Username Change
+      tags:
+        - User Profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: User Profile Details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username: 
+                  type: string
+      responses:
+        "200":
+          description: User Details with Updated Username.
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/userSchema"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+  "/deleteUser/{username}":
+    put:
+      summary: User - Username Change
+      tags:
+        - User Profile
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          description: Username of User
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        "200":
+          description: User Details with Updated Username.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  message:
+                    type: string
+                    example: User Deleted Successfully
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+definitions:
+  updateUserProfile:
+    type: object
+    properties:
+      firstname:
+        type: string
+      lastname:
+        type: string
+      username:
+        type: string
+      emailId:
+        type: string
+      image:
+        type: string
+
+  userProfileSchema:
+    type: object
+    properties:
+      firstname:
+        type: string
+      lastname:
+        type: string
+      username:
+        type: string
+      emailId:
+        type: string
+      image:
+        type: string
+      profile:
+        type: object
+        properties:
+          profileSummary:
+            type: string
+          linkedInUrl:
+            type: string
+          yearsOfExperience:
+            type: number
+          domainOfExpertise:
+            type: array
+            items:
+              type: string
+              enum:
+                - Product Requirement Document
+                - Resume
+                - LOR
+                - Essay
+          industry:
+            type: array
+            items:
+              type: string
+              enum:
+                - Software
+                - Hardware
+                - Pharmaceutical
+                - Banking
+                - Consulting
+          resume:
+            type: string

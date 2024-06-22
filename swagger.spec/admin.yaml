@@ -1,0 +1,109 @@
+paths:
+  "/user/{username}":
+    put:
+      summary: Approve/Reject Moderator
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          description: Username of Approve/Rejecting User
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User & Activaton Status details
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/AppRejUserSchema"
+      responses:
+        "201":
+          description: Success Message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User (Approved/Rejected) Successfully
+        "400":
+          description: Bad Request
+  "/users":
+    get:
+      summary: Get All Users
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: boolean
+          required: false
+          description: Filter users by their active status
+        - in: query
+          name: actStatus
+          schema:
+            type: string
+            enum:
+              - pending
+              - approved
+          required: false
+          description: Filter users by their activation status
+      responses:
+        "201":
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        firstname:
+                          type: string
+                        lastname:
+                          type: string
+                        emailId:
+                          type: string
+                        username:
+                          type: string
+                        role:
+                          type: string
+                        activationStatus:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                            message:
+                              type: string
+                        isActive:
+                          type: boolean
+                        profile:
+                          $ref: "#/definitions/userProfileSchema"
+        "400":
+          description: Bad Request
+
+definitions:
+  AppRejUserSchema:
+    type: object
+    properties:
+      userId:
+        type: string
+        example: 665ae0233d1ddd3abf27efdc
+      status:
+        type: string
+        example: approved/rejected
+      message:
+        type: string
+        example: Reason For Rejection
