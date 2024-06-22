@@ -1,0 +1,197 @@
+paths:
+  "/review/{docId}/comment":
+    post:
+      summary: Create a comment
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: docId
+          description: Document Id
+          required: true
+          schema:
+            type: string
+            format: string
+      requestBody:
+        description: Comment Text
+        content:
+          application/json:
+            schema:
+              $ref: "#/definitions/CommentsInputSchema"
+      responses:
+        "201":
+          description: Commented Successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/definitions/ReviewResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
+  "/review/{docId}/comment/{commentId}":
+    put:
+      summary: Delete a comment
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: docId
+          description: Document Id
+          required: true
+          schema:
+            type: string
+            format: string
+        - in: path
+          name: commentId
+          description: Comment Id
+          required: true
+          schema:
+            type: string
+            format: string
+      requestBody:
+        description: Comment Text
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+      responses:
+        "200":
+          description: On Success.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Comment Updated Successfully.
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
+    delete:
+      summary: Delete a comment
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: docId
+          description: Document Id
+          required: true
+          schema:
+            type: string
+            format: string
+        - in: path
+          name: commentId
+          description: Comment Id
+          required: true
+          schema:
+            type: string
+            format: string
+      responses:
+        "200":
+          description: Comment Deleted Successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Comment Deleted Successfully.
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Bad Request
+  # "/review/{docId}/comments":
+  #   put:
+  #     summary: Add Bulk Comments
+  #     tags:
+  #       - Comments
+  #     security:
+  #       - bearerAuth: []
+  #     parameters:
+  #       - in: path
+  #         name: docId
+  #         description: Document Id
+  #         required: true
+  #         schema:
+  #           type: string
+  #           format: string
+  #     requestBody:
+  #       description: Comments
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               comments:
+  #                 type: array
+  #                 items:
+  #                   $ref: "#/definitions/CommentsInputSchema"
+  #     responses:
+  #       "200":
+  #         description: On Success.
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: "#/definitions/ReviewResponse"
+  #       "400":
+  #         description: Bad Request
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: string
+  #               example: Bad Request
+definitions:
+  HighlightArea:
+    type: object
+    properties:
+      height:
+        type: number
+        example: 1.559725655398113
+      left:
+        type: number
+        example: 16.363129961161743
+      pageIndex:
+        type: integer
+        example: 1
+      top:
+        type: number
+        example: 15.123768408592417
+      width:
+        type: number
+        example: 76.44545816763892
+  CommentsInputSchema:
+    type: object
+    properties:
+      id:
+        type: number
+        example: 1
+      comment:
+        type: string
+      quote:
+        type: string
+      highlightAreas:
+        type: array
+        items:
+          $ref: "#/definitions/HighlightArea"
