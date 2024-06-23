@@ -43,7 +43,7 @@ const BASE_SCHEMA = Joi.object({
   lastname: Joi.string().required(),
   username: Joi.string().required(),
   emailId: Joi.string().email().required(),
-  image: Joi.string().optional(),
+  image: Joi.string().optional().allow(""),
 });
 
 exports.updateUserProfile = BASE_SCHEMA;
