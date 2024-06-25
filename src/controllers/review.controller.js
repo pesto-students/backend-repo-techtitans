@@ -18,7 +18,6 @@ async function getActiveReviewsByUserWithActiveComments(
   userId = "",
   role
 ) {
-  console.log(role);
   try {
     let localField, alias, unWindValue;
 
@@ -32,12 +31,21 @@ async function getActiveReviewsByUserWithActiveComments(
       unWindValue = "$expertDetails";
     }
 
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error("Invalid user ID");
+    }
+
+    const objectIdUserId = new mongoose.Types.ObjectId(userId);
+
+    // Log the converted ObjectId
+    console.log("Converted ObjectId:", objectIdUserId);
+
     const activeReviews = await Reviews.aggregate([
       // Stage 1: Match reviews with isActive: true and createdBy: userId
       {
         $match: {
           isActive: true,
-          [matchingKey]: new mongoose.Types.ObjectId(userId), // Ensure userId is an ObjectId
+          [matchingKey]: objectIdUserId, // Ensure userId is an ObjectId
         },
       },
       // Stage 2: Filter the comments array to include only active comments

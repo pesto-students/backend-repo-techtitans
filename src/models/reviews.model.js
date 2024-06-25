@@ -130,11 +130,13 @@ const ReviewSchema = new mongoose.Schema(
       default: true,
     },
     createdBy: {
-      type: mongoose.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
       required: true,
     },
     updatedBy: {
       type: mongoose.ObjectId,
+      ref: "Users",
       required: true,
     },
   },
