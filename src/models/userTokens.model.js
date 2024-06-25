@@ -1,9 +1,15 @@
+const { string } = require("joi");
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const UserTokenSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      default: uuidv4,
+    },
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "Users",
       required: true,
     },

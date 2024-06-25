@@ -4,8 +4,13 @@ const {
   DOMAIN_VALUES,
   URL_REGEX,
 } = require("../config/constants");
+const { v4: uuidv4 } = require("uuid");
 
 const HighlightAreaSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    default: uuidv4,
+  },
   height: {
     type: Number,
     required: true,
@@ -30,8 +35,12 @@ const HighlightAreaSchema = new mongoose.Schema({
 
 const CommentsSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      default: uuidv4,
+    },
     commenterId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "Users",
       required: true,
     },
@@ -60,6 +69,10 @@ const CommentsSchema = new mongoose.Schema(
 
 const ReviewSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      default: uuidv4,
+    },
     docId: {
       type: String,
       required: true,
@@ -110,7 +123,7 @@ const ReviewSchema = new mongoose.Schema(
       enum: Object.values(REVIEW_STATUS),
     },
     reviewerId: {
-      type: mongoose.ObjectId,
+      type: String,
       ref: "Users",
       required: true,
       default: null,
@@ -130,12 +143,12 @@ const ReviewSchema = new mongoose.Schema(
       default: true,
     },
     createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "Users",
       required: true,
     },
     updatedBy: {
-      type: mongoose.ObjectId,
+      type: String,
       ref: "Users",
       required: true,
     },

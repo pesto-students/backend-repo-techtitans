@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const ExpertsSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      default: uuidv4,
+    },
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref:'Users',
+      type: String,
+      ref: "Users",
       required: true,
       unique: true,
     },

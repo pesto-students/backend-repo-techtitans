@@ -2,6 +2,7 @@ const { REVIEW_STATUS, ROLES } = require("../config/constants");
 const { Reviews, Experts } = require("../models");
 const experts = require("./experts.controller");
 const mongoose = require("mongoose");
+
 function generateUniqueKey() {
   const currentTimestamp = Date.now();
   const randomNumber = Math.floor(Math.random() * 1000);
@@ -13,12 +14,12 @@ function generateUniqueKey() {
   return modifiedNumber.toString(36).slice(0, 10);
 }
 
-async function getActiveReviewsByUserWithActiveComments(
+const getActiveReviewsByUserWithActiveComments = (
   matchingKey,
-  userId = "",
+  userId,
   role
-) {
-  try {
+) => {
+  return new Promise((resolve, reject) => {
     let localField, alias, unWindValue;
 
     if (role === ROLES.EXPERT) {
@@ -31,21 +32,12 @@ async function getActiveReviewsByUserWithActiveComments(
       unWindValue = "$expertDetails";
     }
 
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      throw new Error("Invalid user ID");
-    }
-
-    const objectIdUserId = new mongoose.Types.ObjectId(userId);
-
-    // Log the converted ObjectId
-    console.log("Converted ObjectId:", objectIdUserId);
-
-    const activeReviews = await Reviews.aggregate([
+    Reviews.aggregate([
       // Stage 1: Match reviews with isActive: true and createdBy: userId
       {
         $match: {
           isActive: true,
-          [matchingKey]: objectIdUserId, // Ensure userId is an ObjectId
+          [matchingKey]: userId, // Ensure userId is an ObjectId
         },
       },
       // Stage 2: Filter the comments array to include only active comments
@@ -104,17 +96,11 @@ async function getActiveReviewsByUserWithActiveComments(
           "expertDetails.image": 1,
         },
       },
-    ]);
-
-    return activeReviews;
-  } catch (error) {
-    console.error(
-      "Error fetching active reviews by user with active comments:",
-      error
-    );
-    throw error;
-  }
-}
+    ])
+      .then((data) => resolve(data))
+      .catch((error) => reject(error));
+  });
+};
 
 async function findExpert(pendingCount = 0) {
   try {

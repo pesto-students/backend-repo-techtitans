@@ -7,6 +7,7 @@ const {
   URL_REGEX,
 } = require("../config/constants");
 const bcrypt = require("bcryptjs");
+const { v4: uuidv4 } = require("uuid");
 
 mongoose.connection.on("connected", async () => {
   // Check if the database is newly created
@@ -39,6 +40,10 @@ mongoose.connection.on("connected", async () => {
 });
 
 const ProfileSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    default: uuidv4,
+  },
   profileSummary: String,
   linkedInUrl: String,
   yearsOfExperience: {
@@ -88,6 +93,10 @@ const ProfileSchema = new mongoose.Schema({
 
 const UserSchema = new mongoose.Schema(
   {
+    _id: {
+      type: String,
+      default: uuidv4,
+    },
     firstname: {
       type: String,
       required: true,

@@ -245,22 +245,20 @@ const updateUserStatus = (req, res) => {
     isActive = true;
   } else status = USER_ACTIVATION_STATUS.REJECTED;
 
-  Users.updateOne(
+  Users.findOneAndUpdate(
     { username },
     {
-      activationStatus: {
-        status,
-        message,
+      $set: {
+        activationStatus: {
+          status,
+          message,
+        },
+        isActive,
       },
-      isActive,
     },
     { new: true }
   )
-    .then(() => {
-      if (status === USER_ACTIVATION_STATUS.REJECTED) return;
-
-      return ExpertsController.create(userId, username);
-    })
+    .then((data) => ExpertsController.create(data._id, data.username, status))
     .then((data) =>
       res.status(201).send({
         message: `User ${
