@@ -109,7 +109,11 @@ const expertSignUp = (req, res) => {
       // return data to next execution or next then method
       return User.save(User);
     })
-    .then((data) => res.status(201).send(data))
+    .then((data) => {
+      MailerCtrl.sendSignUpMail(data);
+
+      res.status(201).send(data);
+    })
     .catch((error) => res.status(400).send(error.message));
 };
 
@@ -132,8 +136,12 @@ const signUp = (req, res) => {
       // return data to next execution or next then method
       return User.save(User);
     })
-    .then((data) => MailerCtrl.sendCustomerSignUpEmail(data))
-    .then((data) => res.status(201).send(data))
+    // .then((data) => MailerCtrl.sendSignUpMail(data))
+    .then((data) => {
+      MailerCtrl.sendSignUpMail(data);
+
+      res.status(201).send(data);
+    })
     .catch((error) => res.status(400).send(error.message));
 };
 
@@ -258,14 +266,18 @@ const updateUserStatus = (req, res) => {
     },
     { new: true }
   )
-    .then((data) => ExpertsController.create(data._id, data.username, status))
-    .then((data) =>
+    .then((data) => ExpertsController.create(data, status))
+    .then((data) => {
+      if (data.activationStatus.status === USER_ACTIVATION_STATUS.APPROVED) {
+        MailerCtrl.sendExpertActivationMail(data);
+      } else MailerCtrl.sendExpertRejectionMail(data);
+
       res.status(201).send({
         message: `User ${
           status.charAt(0).toUpperCase() + status.slice(1)
         } Successfully`,
-      })
-    )
+      });
+    })
     .catch((error) => res.status(400).send({ message: error.message }));
 };
 

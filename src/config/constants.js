@@ -36,8 +36,11 @@ const URL_REGEX = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
 
 const EMAIL_SUB = {
   CUST_SIGNUP: "Welcome to DocChecker!",
+  EXPERT_SIGNUP: "Thank You for Signing Up with DocChecker!",
   FOTGOT_PWD: "Password Reset Request",
   VERIFY_EMAIL: "Verifiy Your Email with DocChecker",
+  USER_ACTIVATION: "Welcome! Your DocChecker Account is Activated",
+  USER_REJECTION: "Account Activation Failed"
 };
 
 module.exports = {
