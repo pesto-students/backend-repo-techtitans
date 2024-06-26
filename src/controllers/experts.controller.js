@@ -1,19 +1,19 @@
 const { USER_ACTIVATION_STATUS } = require("../config/constants");
 const { Experts } = require("../models");
 
-exports.create = (userId, username, status) => {
+exports.create = (user, status) => {
   return new Promise((resolve, reject) => {
     if (status === USER_ACTIVATION_STATUS.REJECTED) {
-      resolve(null);
+      resolve(user);
     }
 
     const Expert = new Experts({
-      userId,
-      username,
+      userId: user._id,
+      username: user.username,
     });
 
     Expert.save(Expert)
-      .then((data) => resolve(data))
+      .then((data) => resolve(user))
       .catch((error) => reject(error));
   });
 };
