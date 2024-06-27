@@ -40,8 +40,20 @@ const EMAIL_SUB = {
   FOTGOT_PWD: "Password Reset Request",
   VERIFY_EMAIL: "Verifiy Your Email with DocChecker",
   USER_ACTIVATION: "Welcome! Your DocChecker Account is Activated",
-  USER_REJECTION: "Account Activation Failed"
+  USER_REJECTION: "Account Activation Failed",
 };
+
+const STATUSCODE = {
+  SUCCESS: 200,
+  CREATED: 201,
+  INTERNAL_ERROR: 500,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  ROLE_NOT_MATCHED: 403,
+  NOTFOUND: 404,
+};
+
+const ERROR_MESSAGE = { message: "Some Error Occured" };
 
 module.exports = {
   ROLES,
@@ -51,4 +63,6 @@ module.exports = {
   INDUSTRY_VALUES,
   URL_REGEX,
   EMAIL_SUB,
+  STATUSCODE,
+  ERROR_MESSAGE,
 };

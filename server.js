@@ -40,10 +40,8 @@ db.mongoose
     process.exit();
   });
 
-// app.use('/api/users', routes);
 // routes
 require("./src/routes/auth.routes")(app);
-// require("./src/routes/roles.routes")(app);
 require("./src/routes/users.routes")(app);
 require("./src/routes/reviews.routes")(app);
 require("./src/routes/comments.routes")(app);
@@ -52,16 +50,17 @@ require("./src/routes/s3.routes")(app);
 // Swagger setup
 const { swaggerSpec } = require("./swagger.spec");
 const swaggerUi = require("swagger-ui-express");
+const { STATUSCODE, ERROR_MESSAGE } = require("./src/config/constants");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     if (err.code === "LIMIT_FILE_SIZE") {
       return res
-        .status(400)
+        .status(STATUSCODE.INTERNAL_ERROR)
         .send({ error: "File size is too large. Maximum size is 5MB." });
     }
-    return res.status(400).send({ error: err.message });
+    return res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
   }
   // If no error, pass to the next middleware
   next();

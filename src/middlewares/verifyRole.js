@@ -3,7 +3,7 @@ const verifyRole = (allowedRoles) => {
     if(allowedRoles.includes(req.user.role)){
         next();
     }else{
-        res.status(403).json({message:'Forbidden'})
+        res.status(STATUSCODE.ROLE_NOT_MATCHED).json({message:'Forbidden'})
     }
   };
 };

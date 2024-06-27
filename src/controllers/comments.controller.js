@@ -1,3 +1,4 @@
+const { STATUSCODE, ERROR_MESSAGE } = require("../config/constants");
 const { Reviews } = require("../models");
 const mongoose = require("mongoose");
 
@@ -51,8 +52,8 @@ const updComment = (Review, input, action) => {
 exports.createComment = (req, res) => {
   getReviewByDocId(req.params.docId, req.user.userId)
     .then((Review) => insertComment(Review, req.user.userId, req.body))
-    .then((data) => res.status(201).send(data))
-    .catch((error) => res.status(400).send(error.message));
+    .then((data) => res.status(STATUSCODE.CREATED).send(data))
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 exports.deleteComment = (req, res) => {
@@ -61,9 +62,9 @@ exports.deleteComment = (req, res) => {
   getReviewByDocId(docId, req.user.userId)
     .then((Review) => updComment(Review, { commentId }, "DELETE"))
     .then(() =>
-      res.status(200).send({ message: "Comment Deleted Successfully." })
+      res.status(STATUSCODE.SUCCESS).send({ message: "Comment Deleted Successfully." })
     )
-    .catch((error) => res.status(400).send(error.message));
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 exports.updateComment = (req, res) => {
@@ -73,9 +74,9 @@ exports.updateComment = (req, res) => {
   getReviewByDocId(docId, req.user.userId)
     .then((Review) => updComment(Review, inputJson, "UPDATE"))
     .then(() =>
-      res.status(200).send({ message: "Comment Updated Successfully." })
+      res.status(STATUSCODE.SUCCESS).send({ message: "Comment Updated Successfully." })
     )
-    .catch((error) => res.status(400).send(error.message));
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 
@@ -98,6 +99,6 @@ exports.addBulkComments = (req, res) => {
     },
     { new: true, runValidators: true }
   )
-    .then((data) => res.status(200).send(data))
-    .catch((error) => res.status(400).send(error.message));
+    .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };

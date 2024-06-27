@@ -1,4 +1,4 @@
-const { REVIEW_STATUS, ROLES } = require("../config/constants");
+const { REVIEW_STATUS, ROLES, STATUSCODE, ERROR_MESSAGE } = require("../config/constants");
 const { Reviews, Experts } = require("../models");
 const experts = require("./experts.controller");
 const mongoose = require("mongoose");
@@ -151,8 +151,8 @@ exports.createReview = async (req, res) => {
   findExpert()
     .then((expert) => insertReview(req.body, expert, req.user.userId))
     .then(([data, expert]) => experts.update(expert, data))
-    .then(([data, reviewData]) => res.status(201).send(reviewData))
-    .catch((error) => res.status(400).send(error.message));
+    .then(([data, reviewData]) => res.status(STATUSCODE.CREATED).send(reviewData))
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 exports.getReviewByDocId = (req, res) => {
@@ -170,9 +170,9 @@ exports.getReviewByDocId = (req, res) => {
       if (!data)
         throw new Error("Review Not found with id: ", req.params.docId);
 
-      res.status(200).send(data.toJSON());
+      res.status(STATUSCODE.SUCCESS).send(data.toJSON());
     })
-    .catch((error) => res.status(400).send({ message: error.message }));
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 exports.submitReview = (req, res) => {
@@ -201,8 +201,8 @@ exports.submitReview = (req, res) => {
     { new: true, runValidators: true, findOneAndModify: false }
   )
     .then((data) => experts.reviewSubmitted(req.user.userId, data))
-    .then((revData) => res.status(200).send(revData))
-    .catch((error) => res.status(400).send({ message: error.message }));
+    .then((revData) => res.status(STATUSCODE.SUCCESS).send(revData))
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 exports.getReviewsByCustId = (req, res) => {
@@ -211,8 +211,8 @@ exports.getReviewsByCustId = (req, res) => {
     req.user.userId,
     req.user.role
   )
-    .then((data) => res.status(200).send(data))
-    .catch((error) => res.status(200).send(error.message));
+    .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 exports.getReviewsByModId = (req, res) => {
@@ -221,8 +221,8 @@ exports.getReviewsByModId = (req, res) => {
     req.user.userId,
     req.user.role
   )
-    .then((data) => res.status(200).send(data))
-    .catch((error) => res.status(200).send(error.message));
+    .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 exports.getUserReviews = (req, res) => {

@@ -1,7 +1,7 @@
 const { Users } = require("../models");
 const bcrypt = require("bcryptjs");
 const { authJwt } = require("../middlewares/index");
-const { USER_ACTIVATION_STATUS } = require("../config/constants");
+const { USER_ACTIVATION_STATUS, STATUSCODE, ERROR_MESSAGE } = require("../config/constants");
 const ExpertsController = require("./experts.controller");
 const { ROLES } = require("../config/constants");
 const UserTokenCtrl = require("./userTokens.controller");
@@ -54,13 +54,13 @@ const findAll = (req, res) => {
   Users.find(input)
     .select("-password -_id") // Exclude the password field
     .then((data) => {
-      res.status(200).send({
+      res.status(STATUSCODE.SUCCESS).send({
         total: data.length,
         data,
       });
     })
     .catch((e) => {
-      res.status(400).send(e.message);
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
     });
 };
 
@@ -77,14 +77,14 @@ const login = (req, res) => {
 
       return userData;
     })
-    .then((data) => res.status(200).send(data))
+    .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
     .catch((e) => {
       if (e instanceof UserNotFoundError) {
-        res.status(404).send(e.message);
+        res.status(STATUSCODE.NOTFOUND).send(e.message);
       } else if (e instanceof UnauthorizedError) {
-        res.status(401).send(e.message);
+        res.status(STATUSCODE.UNAUTHORIZED).send(e.message);
       } else {
-        res.status(400).send(e.message);
+        res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
       }
     });
 };
@@ -112,9 +112,9 @@ const expertSignUp = (req, res) => {
     .then((data) => {
       MailerCtrl.sendSignUpMail(data);
 
-      res.status(201).send(data);
+      res.status(STATUSCODE.CREATED).send(data);
     })
-    .catch((error) => res.status(400).send(error.message));
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 const signUp = (req, res) => {
@@ -140,15 +140,15 @@ const signUp = (req, res) => {
     .then((data) => {
       MailerCtrl.sendSignUpMail(data);
 
-      res.status(201).send(data);
+      res.status(STATUSCODE.CREATED).send(data);
     })
-    .catch((error) => res.status(400).send(error.message));
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 const signOut = (req, res) => {
   UserTokenCtrl.delete(req.user.userId)
-    .then((data) => res.status(200).send(data))
-    .catch((error) => res.status(400).send(error.message));
+    .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 const updateProfile = (req, res) => {
@@ -186,7 +186,7 @@ const updateProfile = (req, res) => {
     })
     .then((data) => {
       if (data) {
-        res.status(200).send({
+        res.status(STATUSCODE.SUCCESS).send({
           message: "Updated Successfully",
           data,
         });
@@ -195,7 +195,7 @@ const updateProfile = (req, res) => {
       }
     })
     .catch((error) => {
-      res.status(400).send(error.message);
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
     });
 };
 
@@ -211,13 +211,13 @@ const updateUserName = (req, res) => {
     { new: true, runValidators: true, findOneAndModify: false }
   )
     .then((data) =>
-      res.status(200).send({
+      res.status(STATUSCODE.SUCCESS).send({
         message: "Username Updated Successfully",
         data,
       })
     )
     .catch((error) => {
-      res.status(400).send(error.message);
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
     });
 };
 
@@ -233,13 +233,13 @@ const deleteUser = (req, res) => {
   )
     .then((data) => {
       if (data.acknowledged) {
-        res.status(200).send({
+        res.status(STATUSCODE.SUCCESS).send({
           message: "User Deleted Successfully",
         });
       }
     })
     .catch((error) => {
-      res.status(400).send(error.message);
+      res.status(STATUSCODE.INTERNAL_ERROR).send(error.message);
     });
 };
 
@@ -272,13 +272,13 @@ const updateUserStatus = (req, res) => {
         MailerCtrl.sendExpertActivationMail(data);
       } else MailerCtrl.sendExpertRejectionMail(data);
 
-      res.status(201).send({
+      res.status(STATUSCODE.CREATED).send({
         message: `User ${
           status.charAt(0).toUpperCase() + status.slice(1)
         } Successfully`,
       });
     })
-    .catch((error) => res.status(400).send({ message: error.message }));
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 const updatePassword = (req, res) => {
@@ -294,9 +294,9 @@ const updatePassword = (req, res) => {
   )
     .then((data) => UserTokenCtrl.delete(data._id))
     .then(() =>
-      res.status(200).send({ message: "Password Updated Successfully" })
+      res.status(STATUSCODE.SUCCESS).send({ message: "Password Updated Successfully" })
     )
-    .catch((error) => res.status(400).send(error.message));
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 const updateResume = (req, res) => {};
@@ -314,8 +314,8 @@ const verifyEmail = (req, res) => {
     .then((data) => {
       return MailerCtrl.sendEmailVerificationMail(data.emailId, otp);
     })
-    .then((data) => res.status(200).send(data))
-    .catch((error) => res.status(400).send(error));
+    .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 const forgotPassword = (req, res) => {
@@ -338,9 +338,9 @@ const forgotPassword = (req, res) => {
       return MailerCtrl.sendForgotPasswordEmail(data.emailId, data.otp);
     })
     .then((info) =>
-      res.status(200).send({ message: "Email Sent Successfully" })
+      res.status(STATUSCODE.SUCCESS).send({ message: "Email Sent Successfully" })
     )
-    .catch((error) => res.status(400).send(error.message));
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 const verifyOTP = (req, res) => {
@@ -362,13 +362,13 @@ const verifyOTP = (req, res) => {
       return authJwt.createToken(data);
     })
     .then((data) =>
-      res.status(200).send({
+      res.status(STATUSCODE.SUCCESS).send({
         status: true,
         accessToken: data.accessToken,
         message: `OTP Verified`,
       })
     )
-    .catch((error) => res.status(400).send(error.message));
+    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
 };
 
 exports.findAll = findAll;

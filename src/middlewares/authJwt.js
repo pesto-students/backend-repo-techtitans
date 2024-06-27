@@ -4,28 +4,7 @@ const db = require("../models");
 const User = db.user;
 const Role = db.role;
 const UserTokenCtrl = require("../controllers/userTokens.controller.js");
-
-// createJWTToken = async (payload) => {
-//   return new Promise((resolve, reject) => {
-//     try {
-//       const { _id, username, role } = payload;
-
-//       const jwtToken = jwt.sign(
-//         {
-//           userId: _id,
-//           username,
-//           role,
-//           payload,
-//         },
-//         config.secret
-//       );
-
-//       resolve(jwtToken);
-//     } catch (error) {
-//       reject(error);
-//     }
-//   });
-// };
+const { STATUSCODE, ERROR_MESSAGE } = require("../config/constants.js");
 
 createToken = async (payload) => {
   const { _id, username, role, emailId } = payload;
@@ -54,11 +33,11 @@ verifyToken = async (req, res, next) => {
   let token = req.headers.authorization;
 
   if (!token) {
-    return res.status(403).send({ message: "No token provided!" });
+    return res.status(STATUSCODE.ROLE_NOT).send({ message: "No token provided!" });
   }
 
   if (!token?.startsWith("Bearer")) {
-    return res.status(400).send({
+    return res.status(STATUSCODE.BAD_REQUEST).send({
       message: "Invalid token.",
     });
   }
@@ -69,7 +48,7 @@ verifyToken = async (req, res, next) => {
     await jwt.verify(token, config.secret, async (err, decoded) => {
       // console.log(err, decoded);
       if (err) {
-        return res.status(401).send({
+        return res.status(STATUSCODE.UNAUTHORIZED).send({
           message: "Unauthorized!",
         });
       }
@@ -79,14 +58,14 @@ verifyToken = async (req, res, next) => {
       next();
     });
   } catch (ex) {
-    res.status(440).send(ex.message);
+    res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
   }
 };
 
 isAdmin = (req, res, next) => {
   User.findById(req.user.userId).exec((err, user) => {
     if (err) {
-      res.status(500).send({ message: err });
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
       return;
     }
 
@@ -96,7 +75,7 @@ isAdmin = (req, res, next) => {
       },
       (err, roles) => {
         if (err) {
-          res.status(500).send({ message: err });
+          res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
           return;
         }
 
@@ -107,7 +86,7 @@ isAdmin = (req, res, next) => {
           }
         }
 
-        res.status(403).send({ message: "Require Admin Role!" });
+        res.status(STATUSCODE.ROLE_NOT_MATCHED).send({ message: "Require Admin Role!" });
         return;
       }
     );
@@ -117,7 +96,7 @@ isAdmin = (req, res, next) => {
 isModerator = (req, res, next) => {
   User.findById(req.user.userId).exec((err, user) => {
     if (err) {
-      res.status(500).send({ message: err });
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
       return;
     }
 
@@ -127,7 +106,7 @@ isModerator = (req, res, next) => {
       },
       (err, roles) => {
         if (err) {
-          res.status(500).send({ message: err });
+          res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
           return;
         }
 
@@ -138,7 +117,7 @@ isModerator = (req, res, next) => {
           }
         }
 
-        res.status(403).send({ message: "Require Moderator Role!" });
+        res.status(STATUSCODE.ROLE_NOT_MATCHED).send(ERROR_MESSAGE);
         return;
       }
     );
