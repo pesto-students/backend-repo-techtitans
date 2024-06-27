@@ -20,7 +20,8 @@ app.use(cors());
 // );
 
 // parse requests of content-type - application/json
-app.use(express.json());
+// Limit to 10KB for JSON bodies
+app.use(express.json({ limit: '10kb' }));
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
