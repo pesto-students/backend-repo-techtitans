@@ -53,7 +53,15 @@ const STATUSCODE = {
   NOTFOUND: 404,
 };
 
-const ERROR_MESSAGE = { message: "Some Error Occured" };
+function crtMsg(text) {
+  return {
+    message: text,
+  };
+}
+
+const ERROR_MESSAGE = crtMsg("Some Error Occured");
+const UNAUTHORIZED_MESSAGE = crtMsg("Unauthorized!");
+const INVALIDTOKEN = crtMsg("Invalid token.");
 
 module.exports = {
   ROLES,
@@ -65,4 +73,6 @@ module.exports = {
   EMAIL_SUB,
   STATUSCODE,
   ERROR_MESSAGE,
+  UNAUTHORIZED_MESSAGE,
+  INVALIDTOKEN
 };
