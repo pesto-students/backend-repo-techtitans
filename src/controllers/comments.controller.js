@@ -1,6 +1,6 @@
 const { STATUSCODE, ERROR_MESSAGE } = require("../config/constants");
 const { Reviews } = require("../models");
-const mongoose = require("mongoose");
+const { logger } = require("../config/logger.config");
 
 const getReviewByDocId = (docId, reviewerId) => {
   return new Promise((resolve, reject) => {
@@ -53,7 +53,11 @@ exports.createComment = (req, res) => {
   getReviewByDocId(req.params.docId, req.user.userId)
     .then((Review) => insertComment(Review, req.user.userId, req.body))
     .then((data) => res.status(STATUSCODE.CREATED).send(data))
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 exports.deleteComment = (req, res) => {
@@ -62,9 +66,15 @@ exports.deleteComment = (req, res) => {
   getReviewByDocId(docId, req.user.userId)
     .then((Review) => updComment(Review, { commentId }, "DELETE"))
     .then(() =>
-      res.status(STATUSCODE.SUCCESS).send({ message: "Comment Deleted Successfully." })
+      res
+        .status(STATUSCODE.SUCCESS)
+        .send({ message: "Comment Deleted Successfully." })
     )
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 exports.updateComment = (req, res) => {
@@ -74,11 +84,16 @@ exports.updateComment = (req, res) => {
   getReviewByDocId(docId, req.user.userId)
     .then((Review) => updComment(Review, inputJson, "UPDATE"))
     .then(() =>
-      res.status(STATUSCODE.SUCCESS).send({ message: "Comment Updated Successfully." })
+      res
+        .status(STATUSCODE.SUCCESS)
+        .send({ message: "Comment Updated Successfully." })
     )
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
-};
+    .catch((error) => {
+      logger.error(error.message, error);
 
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
+};
 
 exports.addBulkComments = (req, res) => {
   const commentsInp = req.body.comments.map((comment) => {
@@ -100,5 +115,9 @@ exports.addBulkComments = (req, res) => {
     { new: true, runValidators: true }
   )
     .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };

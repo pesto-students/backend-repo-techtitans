@@ -1,12 +1,17 @@
 const { Users } = require("../models");
 const bcrypt = require("bcryptjs");
 const { authJwt } = require("../middlewares/index");
-const { USER_ACTIVATION_STATUS, STATUSCODE, ERROR_MESSAGE } = require("../config/constants");
+const {
+  USER_ACTIVATION_STATUS,
+  STATUSCODE,
+  ERROR_MESSAGE,
+} = require("../config/constants");
 const ExpertsController = require("./experts.controller");
 const { ROLES } = require("../config/constants");
 const UserTokenCtrl = require("./userTokens.controller");
 const MailerCtrl = require("./mailer.controller");
 const OTPCtrl = require("./otp.controller");
+const { logger } = require("../config/logger.config");
 
 function hashPassword(pwd) {
   return bcrypt.hashSync(pwd, 8);
@@ -59,7 +64,9 @@ const findAll = (req, res) => {
         data,
       });
     })
-    .catch((e) => {
+    .catch((err) => {
+      logger.error(err.message, err);
+
       res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
     });
 };
@@ -78,11 +85,13 @@ const login = (req, res) => {
       return userData;
     })
     .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
-    .catch((e) => {
-      if (e instanceof UserNotFoundError) {
-        res.status(STATUSCODE.NOTFOUND).send(e.message);
-      } else if (e instanceof UnauthorizedError) {
-        res.status(STATUSCODE.UNAUTHORIZED).send(e.message);
+    .catch((err) => {
+      logger.error(err.message, err);
+
+      if (err instanceof UserNotFoundError) {
+        res.status(STATUSCODE.NOTFOUND).send(err.message);
+      } else if (err instanceof UnauthorizedError) {
+        res.status(STATUSCODE.UNAUTHORIZED).send(err.message);
       } else {
         res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
       }
@@ -114,7 +123,11 @@ const expertSignUp = (req, res) => {
 
       res.status(STATUSCODE.CREATED).send(data);
     })
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 const signUp = (req, res) => {
@@ -142,13 +155,21 @@ const signUp = (req, res) => {
 
       res.status(STATUSCODE.CREATED).send(data);
     })
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 const signOut = (req, res) => {
   UserTokenCtrl.delete(req.user.userId)
     .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 const updateProfile = (req, res) => {
@@ -195,6 +216,8 @@ const updateProfile = (req, res) => {
       }
     })
     .catch((error) => {
+      logger.error(error.message, error);
+
       res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
     });
 };
@@ -217,6 +240,8 @@ const updateUserName = (req, res) => {
       })
     )
     .catch((error) => {
+      logger.error(error.message, error);
+
       res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
     });
 };
@@ -239,6 +264,8 @@ const deleteUser = (req, res) => {
       }
     })
     .catch((error) => {
+      logger.error(error.message, error);
+
       res.status(STATUSCODE.INTERNAL_ERROR).send(error.message);
     });
 };
@@ -278,7 +305,11 @@ const updateUserStatus = (req, res) => {
         } Successfully`,
       });
     })
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 const updatePassword = (req, res) => {
@@ -294,9 +325,15 @@ const updatePassword = (req, res) => {
   )
     .then((data) => UserTokenCtrl.delete(data._id))
     .then(() =>
-      res.status(STATUSCODE.SUCCESS).send({ message: "Password Updated Successfully" })
+      res
+        .status(STATUSCODE.SUCCESS)
+        .send({ message: "Password Updated Successfully" })
     )
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 const updateResume = (req, res) => {};
@@ -315,7 +352,11 @@ const verifyEmail = (req, res) => {
       return MailerCtrl.sendEmailVerificationMail(data.emailId, otp);
     })
     .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 const forgotPassword = (req, res) => {
@@ -338,9 +379,15 @@ const forgotPassword = (req, res) => {
       return MailerCtrl.sendForgotPasswordEmail(data.emailId, data.otp);
     })
     .then((info) =>
-      res.status(STATUSCODE.SUCCESS).send({ message: "Email Sent Successfully" })
+      res
+        .status(STATUSCODE.SUCCESS)
+        .send({ message: "Email Sent Successfully" })
     )
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 const verifyOTP = (req, res) => {
@@ -368,7 +415,11 @@ const verifyOTP = (req, res) => {
         message: `OTP Verified`,
       })
     )
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 exports.findAll = findAll;

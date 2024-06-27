@@ -1,7 +1,12 @@
-const { REVIEW_STATUS, ROLES, STATUSCODE, ERROR_MESSAGE } = require("../config/constants");
+const {
+  REVIEW_STATUS,
+  ROLES,
+  STATUSCODE,
+  ERROR_MESSAGE,
+} = require("../config/constants");
 const { Reviews, Experts } = require("../models");
 const experts = require("./experts.controller");
-const mongoose = require("mongoose");
+const { logger } = require("../config/logger.config");
 
 function generateUniqueKey() {
   const currentTimestamp = Date.now();
@@ -151,8 +156,14 @@ exports.createReview = async (req, res) => {
   findExpert()
     .then((expert) => insertReview(req.body, expert, req.user.userId))
     .then(([data, expert]) => experts.update(expert, data))
-    .then(([data, reviewData]) => res.status(STATUSCODE.CREATED).send(reviewData))
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .then(([data, reviewData]) =>
+      res.status(STATUSCODE.CREATED).send(reviewData)
+    )
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 exports.getReviewByDocId = (req, res) => {
@@ -172,7 +183,11 @@ exports.getReviewByDocId = (req, res) => {
 
       res.status(STATUSCODE.SUCCESS).send(data.toJSON());
     })
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 exports.submitReview = (req, res) => {
@@ -202,7 +217,11 @@ exports.submitReview = (req, res) => {
   )
     .then((data) => experts.reviewSubmitted(req.user.userId, data))
     .then((revData) => res.status(STATUSCODE.SUCCESS).send(revData))
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 exports.getReviewsByCustId = (req, res) => {
@@ -212,7 +231,11 @@ exports.getReviewsByCustId = (req, res) => {
     req.user.role
   )
     .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 exports.getReviewsByModId = (req, res) => {
@@ -222,7 +245,11 @@ exports.getReviewsByModId = (req, res) => {
     req.user.role
   )
     .then((data) => res.status(STATUSCODE.SUCCESS).send(data))
-    .catch((error) => res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE));
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
 
 exports.getUserReviews = (req, res) => {

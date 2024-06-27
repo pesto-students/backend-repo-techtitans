@@ -2,6 +2,7 @@ const s3 = require("../config/s3.config");
 const fs = require("fs");
 const path = require("path");
 const { STATUSCODE, ERROR_MESSAGE } = require("../config/constants");
+const { logger } = require("../config/logger.config");
 
 const uploadFileToBucket = (filePath) => {
   return new Promise((resolve, reject) => {
@@ -31,7 +32,9 @@ exports.uploadFile = (req, res) => {
 
   uploadFileToBucket(file.path)
     .then((s3Url) => res.status(STATUSCODE.SUCCESS).send({ url: s3Url }))
-    .catch((error) =>
-      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE)
-    );
+    .catch((error) => {
+      logger.error(error.message, error);
+
+      res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    });
 };
