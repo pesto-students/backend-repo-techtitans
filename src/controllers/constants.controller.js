@@ -1,4 +1,4 @@
-const { DOMAIN_VALUES, INDUSTRY_VALUES } = require("../config/constants")
+const { DOMAIN_VALUES, INDUSTRY_VALUES, STATUSCODE } = require("../config/constants");
 
 exports.docTypes = (req, res) => {
     res.status(STATUSCODE.SUCCESS).send(DOMAIN_VALUES)
