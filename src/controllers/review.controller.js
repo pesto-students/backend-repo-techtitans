@@ -88,7 +88,7 @@ const getActiveReviewsByUserWithActiveComments = (
           reviewStatus: 1,
           reviewerId: 1,
           reviewerUsername: 1,
-          // comments: 1,
+          comments: 1,
           // isActive: 1,
           createdBy: 1,
           updatedBy: 1,

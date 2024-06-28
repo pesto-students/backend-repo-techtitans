@@ -109,7 +109,7 @@ const expertSignUp = (req, res) => {
     profile: { ...req.body.profile },
   });
 
-  Users.findOne({ username: User.get("username") })
+  Users.findOne({ username: User.get("username"), isActive: true })
     .then((userData) => {
       if (userData) {
         throw new Error("Username already exists");
@@ -140,7 +140,7 @@ const signUp = (req, res) => {
     role: ROLES.CUSTOMER,
   });
 
-  Users.findOne({ username: User.get("username") })
+  Users.findOne({ username: User.get("username"), isActive: true })
     .then((userData) => {
       if (userData) {
         throw new Error("Username already exists");
@@ -185,7 +185,7 @@ const updateProfile = (req, res) => {
     updateObj["profile"] = { ...req.body.profile };
   }
 
-  Users.findOne({ username: req.body.username, _id: { $ne: req.user.userId } })
+  Users.findOne({ username: req.body.username, _id: { $ne: req.user.userId }, isActive:true })
     .then((data) => {
       if (data) {
         throw new Error("Username already exists");
@@ -194,6 +194,7 @@ const updateProfile = (req, res) => {
       return Users.findOne({
         emailId: req.body.emailId,
         _id: { $ne: req.user.userId },
+        isActive:true
       });
     })
     .then((data) => {
