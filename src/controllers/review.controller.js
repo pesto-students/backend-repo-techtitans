@@ -22,7 +22,8 @@ function generateUniqueKey() {
 const getActiveReviewsByUserWithActiveComments = (
   matchingKey,
   userId,
-  role
+  role,
+  docId = null
 ) => {
   return new Promise((resolve, reject) => {
     let localField, alias, unWindValue;
@@ -37,13 +38,19 @@ const getActiveReviewsByUserWithActiveComments = (
       unWindValue = "$expertDetails";
     }
 
+    let input = {
+      isActive: true,
+      [matchingKey]: userId, // Ensure userId is an ObjectId
+    };
+
+    if (docId) {
+      input["docId"] = docId;
+    }
+
     Reviews.aggregate([
       // Stage 1: Match reviews with isActive: true and createdBy: userId
       {
-        $match: {
-          isActive: true,
-          [matchingKey]: userId, // Ensure userId is an ObjectId
-        },
+        $match: input,
       },
       // Stage 2: Filter the comments array to include only active comments
       {
@@ -92,7 +99,7 @@ const getActiveReviewsByUserWithActiveComments = (
           "userDetails.lastname": 1,
           "userDetails.username": 1,
           "userDetails.emailId": 1,
-          "expertDetails.image": 1,
+          "userDetails.image": 1,
           "expertDetails._id": 1,
           "expertDetails.firstname": 1,
           "expertDetails.lastname": 1,
@@ -175,13 +182,17 @@ exports.getReviewByDocId = (req, res) => {
   query[req.user.role === ROLES.EXPERT ? "reviewerId" : "createdBy"] =
     req.user.userId;
 
-  console.log(query);
-  Reviews.findOne(query)
+  getActiveReviewsByUserWithActiveComments(
+    req.user.role === ROLES.EXPERT ? "reviewerId" : "createdBy",
+    req.user.userId,
+    req.user.role,
+    query.docId
+  )
     .then((data) => {
       if (!data)
         throw new Error("Review Not found with id: ", req.params.docId);
 
-      res.status(STATUSCODE.SUCCESS).send(data.toJSON());
+      res.status(STATUSCODE.SUCCESS).send(...data);
     })
     .catch((error) => {
       logger.error(error.message, error);
