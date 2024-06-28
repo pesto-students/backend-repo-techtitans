@@ -55,12 +55,14 @@ verifyToken = async (req, res, next) => {
       next();
     });
   } catch (ex) {
-    res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
+    if (ex.message == "session-expired/logged-out") {
+      res.status(STATUSCODE.UNAUTHORIZED).send(ex);
+    } else res.status(STATUSCODE.INTERNAL_ERROR).send(ERROR_MESSAGE);
   }
 };
 
 const authJwt = {
   createToken,
-  verifyToken
+  verifyToken,
 };
 module.exports = authJwt;
